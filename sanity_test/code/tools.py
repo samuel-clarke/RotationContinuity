@@ -280,13 +280,13 @@ def compute_rotation_matrix_from_euler_sin_cos(euler_sin_cos):
 #both matrix are orthogonal rotation matrices
 #out theta between 0 to 180 degree batch
 def compute_geodesic_distance_from_two_matrices(m1, m2):
+    eps = 1e-6
     batch=m1.shape[0]
     m = torch.bmm(m1, m2.transpose(1,2)) #batch*3*3
     
     cos = (  m[:,0,0] + m[:,1,1] + m[:,2,2] - 1 )/2
-    cos = torch.min(cos, torch.autograd.Variable(torch.ones(batch).cuda()) )
-    cos = torch.max(cos, torch.autograd.Variable(torch.ones(batch).cuda())*-1 )
-    
+    cos = torch.min(cos, torch.autograd.Variable(torch.ones(batch).cuda()) - eps)
+    cos = torch.max(cos, torch.autograd.Variable(torch.ones(batch).cuda())*-1 + eps)
     
     theta = torch.acos(cos)
     
